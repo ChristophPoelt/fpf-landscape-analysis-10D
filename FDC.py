@@ -1,0 +1,61 @@
+def load_json_data(json_file):
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    X_samples = []
+    y_samples = []
+    for entry in data:
+        for individual in entry['individualsWithFPF']:
+            if individual['fpfValue'] != 1.0:
+                X_samples.append(individual['genome'])
+                y_samples.append(individual['fpfValue'])
+    return np.array(X_samples), np.array(y_samples)
+
+from scipy.stats import pearsonr
+import numpy as np
+import json
+
+def schwefel(x):
+    return ((418.9828872724339 * len(x) - np.sum(x * np.sin(np.sqrt(np.abs(x))))))/10000
+
+
+def schaffer(x):
+    sum_terms = 0.0
+    for i in range(len(x) - 1):
+        xi2_xj2 = x[i]**2 + x[i + 1]**2
+        term1 = xi2_xj2 ** 0.25
+        term2 = np.sin(50 * xi2_xj2 ** 0.10) ** 2
+        sum_terms += term1 * (term2 + 1.0)
+    return sum_terms/250
+
+# OLD load_json_data removed
+# def load_json_data(json_file):
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    X_samples = []
+    y_samples = []
+    for entry in data:
+        for individual in entry['individualsWithFPF']:
+            if individual['fpfValue'] != 1.0:  # Exclude fpfValue of 1.0
+                X_samples.append([individual['x1'], individual['x2']])
+                y_samples.append(individual['fpfValue'])
+
+    return np.array(X_samples), np.array(y_samples)
+
+# Generate random points
+# num_points = 25000  # Reduce for visualization purposes
+# X_samples = np.random.uniform(-100, 100, (num_points, 2))
+# y_samples = np.array([schaffer(x) for x in X_samples])
+# y_samples = np.array([schwefel(x) for x in X_samples])
+
+json_file = "schaffer_10D_FixedTarget.json"
+X_samples, y_samples = load_json_data(json_file)
+
+# Compute distances to the global best
+global_best = np.array([420.96874636] * 10)  # global optimum for schwefel
+# global_best = np.array([0.0] * 10)  # global optimum for schaffer
+distances = np.linalg.norm(X_samples - global_best, axis=1)
+
+# Compute Pearson correlation between distances and fitness values
+fdc, _ = pearsonr(distances, y_samples)
+
+print(f"Fitness-Distance Correlation (FDC): {fdc:.6f}")
