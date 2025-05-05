@@ -50,7 +50,7 @@ def schaffer(x):
     return np.array(X_samples), np.array(y_samples)
 
 # Diskrete Gradient Methode mit k-NN
-def discrete_gradient_method(starting_point, X_samples, y_samples, k=12, learning_rate=9, max_iters=100, tolerance=0.00000000000001):
+def discrete_gradient_method(starting_point, X_samples, y_samples, k=12, learning_rate=30, max_iters=100, tolerance=0.00000000000001):
     tree = KDTree(X_samples)  # KD-Tree zur schnellen k-NN Suche
     x = np.array(starting_point, dtype=np.float64)
     path = [x.copy()]
@@ -129,4 +129,4 @@ def main(json_file, num_runs=100):
     plt.show()
 
 
-main("schwefel_10D_FixedGenerations.json")
+main("schwefel_10D_ImprovementBased.json")
