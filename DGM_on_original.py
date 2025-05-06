@@ -19,7 +19,7 @@ def schaffer_nd(x):
 def schaffer_nd_normalized(x):
     return schaffer_nd(x) / 250.0
 
-def discrete_gradient_method(start, X, y, k=12, learning_rate=10, max_iters=100, tolerance=1e-8):
+def discrete_gradient_method(start, X, y, k=12, learning_rate=10, max_iters=100, tolerance=0.00025):
     nn = NearestNeighbors(n_neighbors=k+1).fit(X)
     x = start.copy()
     path = [x.copy()]
@@ -88,5 +88,5 @@ def run_dgm_on_real_function(problem='schwefel', n_samples=100000, dim=10, num_r
     plt.tight_layout()
     plt.show()
 
-run_dgm_on_real_function('schwefel')
-# run_dgm_on_real_function('schaffer')
+# run_dgm_on_real_function('schwefel')
+run_dgm_on_real_function('schaffer')

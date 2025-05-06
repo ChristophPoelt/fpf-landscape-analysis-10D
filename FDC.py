@@ -27,8 +27,6 @@ def schaffer(x):
         sum_terms += term1 * (term2 + 1.0)
     return sum_terms/250
 
-# OLD load_json_data removed
-# def load_json_data(json_file):
     with open(json_file, 'r') as f:
         data = json.load(f)
     X_samples = []
@@ -50,12 +48,10 @@ def schaffer(x):
 json_file = "schaffer_10D_FixedTarget.json"
 X_samples, y_samples = load_json_data(json_file)
 
-# Compute distances to the global best
 global_best = np.array([420.96874636] * 10)  # global optimum for schwefel
 # global_best = np.array([0.0] * 10)  # global optimum for schaffer
 distances = np.linalg.norm(X_samples - global_best, axis=1)
 
-# Compute Pearson correlation between distances and fitness values
 fdc, _ = pearsonr(distances, y_samples)
 
 print(f"Fitness-Distance Correlation (FDC): {fdc:.6f}")

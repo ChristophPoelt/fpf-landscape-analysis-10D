@@ -27,8 +27,6 @@ def schaffer(x):
         sum_terms += term1 * (term2 + 1.0)
     return sum_terms/250
 
-# OLD load_json_data removed
-# def load_json_data(json_file):
     with open(json_file, 'r') as f:
         data = json.load(f)
     X_samples = []
@@ -49,7 +47,6 @@ def schaffer(x):
 json_file = "schaffer_10D_FixedTarget.json"
 X_samples, y_samples = load_json_data(json_file)
 
-# Compute histogram of fitness values
 hist, _ = np.histogram(y_samples, bins=50, density=True)
 landscape_entropy = entropy(hist)
 

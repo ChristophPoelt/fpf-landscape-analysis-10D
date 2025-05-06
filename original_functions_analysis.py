@@ -3,9 +3,6 @@ import json
 from scipy.stats import entropy, pearsonr
 from sklearn.neighbors import NearestNeighbors
 
-# ---------------------------------------------
-# Problemfunktionen
-# ---------------------------------------------
 
 def schaffer_nd(x):
     sum_terms = 0.0
@@ -27,9 +24,6 @@ def schwefel_nd(x):
 def schwefel_nd_normalized(x):
     return schwefel_nd(x) / 10000.0
 
-# ---------------------------------------------
-# Analysefunktionen
-# ---------------------------------------------
 
 def compute_convexity_ratio(y):
     convex_count = 0
@@ -68,9 +62,6 @@ def compute_gradient_magnitude(X, y, k=12):
             gradients.append(np.mean(local_grads))
     return float(np.mean(gradients)), float(np.std(gradients))
 
-# ---------------------------------------------
-# Hauptfunktion
-# ---------------------------------------------
 
 def run_full_analysis(problem='schwefel', n_points=100000, dim=10, seed=42):
     np.random.seed(seed)

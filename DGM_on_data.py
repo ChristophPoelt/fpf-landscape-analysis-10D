@@ -33,8 +33,6 @@ def schaffer(x):
         sum_terms += term1 * (term2 + 1.0)
     return sum_terms
 
-# OLD load_json_data removed
-# def load_json_data(json_file):
     with open(json_file, 'r') as f:
         data = json.load(f)
 
@@ -44,26 +42,24 @@ def schaffer(x):
     for entry in data:
         for individual in entry['individualsWithFPF']:
             X_samples.append([individual['x1'], individual['x2']])
-            # update this value according to the problem instance (250: schaffer, 10000: schwefel)
             y_samples.append(individual['fpfValue'])
 
     return np.array(X_samples), np.array(y_samples)
 
-# Diskrete Gradient Methode mit k-NN
-def discrete_gradient_method(starting_point, X_samples, y_samples, k=12, learning_rate=30, max_iters=100, tolerance=0.00000000000001):
-    tree = KDTree(X_samples)  # KD-Tree zur schnellen k-NN Suche
+
+def discrete_gradient_method(starting_point, X_samples, y_samples, k=12, learning_rate=10, max_iters=100, tolerance=1e-12):
+    tree = KDTree(X_samples)
     x = np.array(starting_point, dtype=np.float64)
     path = [x.copy()]
     function_values = [y_samples[np.argmin(np.linalg.norm(X_samples - x, axis=1))]]
 
     for step in range(max_iters):
-        # Finde k nächste Nachbarn
         dists, indices = tree.query(x, k=k)
         neighbors = X_samples[indices]
         f_neighbors = y_samples[indices]
 
         # Vermeidung von Division durch Null
-        dists = np.maximum(dists, 1e-8)  # Ersetze 0-Distanzen durch kleinen Wert
+        dists = np.maximum(dists, 1e-8)
 
         gradients = np.array([(f_neighbors[i] - function_values[-1]) / (np.linalg.norm(neighbors[i] - x) ** 2 + 1e-8) * (neighbors[i] - x)
                               for i in range(k)])
@@ -85,8 +81,8 @@ def discrete_gradient_method(starting_point, X_samples, y_samples, k=12, learnin
             break
 
     # Berechnung des realen Schwefel-Wertes (oder andere Probleminstanzen) am Endpunkt
-    # final_schwefel_value = schaffer(x)
-    final_schwefel_value = schwefel(x)
+    final_schwefel_value = schaffer(x)
+    # final_schwefel_value = schwefel(x)
 
     return function_values, step + 1, final_schwefel_value
 
@@ -106,27 +102,23 @@ def main(json_file, num_runs=100):
     avg_steps = np.mean(num_steps)
     std_steps = np.std(num_steps)
 
-    # update this value according to problem instance 2: H1, 25: schaffer, 4000: schwefel
-    print(f"Durchschnittlicher finaler FPF-Wert: {avg_final_value/2:.2f}")
+    print(f"Durchschnittlicher finaler FPF-Wert: {avg_final_value:.2f}")
     print(f"Durchschnittlicher realer Schwefel-Wert: {avg_final_schwefel:.2f} ± {std_final_schwefel:.2f}")
     print(f"Durchschnittliche Anzahl an Schritten bis zur Konvergenz: {avg_steps:.2f} ± {std_steps:.2f}")
 
-    # Visualisierungen
     plt.figure(figsize=(12, 5))
     plt.subplot(1, 2, 1)
     plt.hist(final_schwefel_values, bins=20, edgecolor='black', alpha=0.7)
     plt.xlabel("DGM results' H1 target value")
     plt.ylabel("Frequency")
-    # Removed for 10D("Distribution of DGM results")
 
     plt.subplot(1, 2, 2)
     plt.hist(num_steps, bins=20, edgecolor='black', alpha=0.7)
     plt.xlabel("Number of steps to convergence")
     plt.ylabel("Frequency")
-    # Removed for 10D("Distribution of steps to convergence")
 
     plt.tight_layout()
     plt.show()
 
 
-main("schwefel_10D_ImprovementBased.json")
+main("schaffer_10D_FixedTarget.json")
