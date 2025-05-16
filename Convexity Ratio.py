@@ -12,6 +12,8 @@ def load_json_data(json_file):
 
 import numpy as np
 import json
+from scipy.spatial import KDTree
+
 
 def schwefel(x):
     return ((418.9828872724339 * len(x) - np.sum(x * np.sin(np.sqrt(np.abs(x))))))/10000
@@ -46,15 +48,35 @@ def schaffer(x):
 json_file = "schaffer_10D_FixedTarget.json"
 X_samples, y_samples = load_json_data(json_file)
 
-def compute_convexity_ratio(X_samples, y_samples):
-    convex_count = 0
-    total_count = len(X_samples)
 
-    for i in range(total_count - 2):
-        if y_samples[i] < max(y_samples[i + 1], y_samples[i + 2]):
-            convex_count += 1
 
-    return convex_count / total_count
+def compute_convexity_ratio(X_samples, y_samples, num_pairs=1000, num_interpolations=10):
+
+    n = len(X_samples)
+    cr_counter = 0
+    total = 0
+    tree = KDTree(X_samples)
+    y_samples = np.array(y_samples)
+
+    for _ in range(num_pairs):
+        i, j = np.random.choice(n, size=2, replace=False)
+        xa, xb = X_samples[i], X_samples[j]
+        fa, fb = y_samples[i], y_samples[j]
+
+        for l in range(1, num_interpolations + 1):
+            lam = l / (num_interpolations + 1)
+            x_lambda = (1 - lam) * xa + lam * xb
+            f_interp = (1 - lam) * fa + lam * fb
+
+            _, idx = tree.query(x_lambda)
+            f_near = y_samples[idx]
+
+            if f_near <= f_interp:
+                cr_counter += 1
+            total += 1
+
+    convexity_ratio = cr_counter / total if total > 0 else 0
+    return convexity_ratio
 
 
 convexity_ratio = compute_convexity_ratio(X_samples, y_samples)
