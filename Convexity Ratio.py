@@ -42,8 +42,8 @@ def schaffer(x):
 
 # Generate random points
 # num_points = 10000
-# X_samples = np.random.uniform(-100, 100, (num_points, 2))
-# y_samples = np.array([schaffer(x[0], x[1]) for x in X_samples])
+# X_samples = np.random.uniform(-100, 100, (num_points, 10))
+# y_samples = np.array([schwefel(x) for x in X_samples])
 
 json_file = "schaffer_10D_FixedTarget.json"
 X_samples, y_samples = load_json_data(json_file)
